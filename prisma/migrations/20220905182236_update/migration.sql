@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE `Episode` ADD COLUMN `premium` BOOLEAN NOT NULL DEFAULT true;
+
+-- AlterTable
+ALTER TABLE `Lesson` ADD COLUMN `price` DECIMAL(65, 30) NOT NULL DEFAULT 0;

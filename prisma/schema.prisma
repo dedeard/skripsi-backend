@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  permissions String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User[]
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  roleId    Int?
+  role      Role?    @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Forgot {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  code      String
+  expiredAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Album {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  media       Media[]
+  share       Share[]
+}
+
+model Media {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  type         String
+  size         Int
+  originalName String
+  albumId      Int
+  album        Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Share {
+  id        Int       @id @default(autoincrement())
+  albumId   Int
+  album     Album     @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  token     String    @unique
+  title     String
+  createdAt DateTime
+  expiredAt DateTime?
+}

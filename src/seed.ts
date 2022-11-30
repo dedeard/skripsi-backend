@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
-import config from '../src/config/config'
-import passwordService from '../src/services/password.service'
+import config from './config/config'
+import passwordService from './services/password.service'
 
 const prisma = new PrismaClient()
 

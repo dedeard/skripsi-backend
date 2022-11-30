@@ -6,14 +6,14 @@
   "license": "MIT",
   "author": "dede ariansya",
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "ts-node src/seed.ts"
   },
   "scripts": {
     "build": "rimraf dist && tsc",
     "start": "node dist",
     "dev": "ts-node-dev --respawn --pretty --transpile-only --exit-child src/index.ts dev",
     "format": "prettier --write **/*.{ts,json}",
-    "migrate": "prisma migrate",
+    "migrate": "rm -rf ./prisma/db.* && prisma migrate dev",
     "seed": "prisma db seed"
   },
   "dependencies": {
@@ -46,7 +46,7 @@
     "@types/node": "^18.7.14",
     "@types/nodemailer": "^6.4.5",
     "prettier": "^2.7.1",
-    "prisma": "^4.4.0",
+    "prisma": "^4.7.0",
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",

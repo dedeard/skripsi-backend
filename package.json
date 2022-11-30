@@ -9,6 +9,8 @@
     "seed": "ts-node src/seed.ts"
   },
   "scripts": {
+    "deploy": "git add . && git commit -m Heroku && git push heroku master",
+    "postinstall": "yarn build && yarn migrate",
     "build": "rimraf dist && tsc",
     "start": "node dist",
     "dev": "ts-node-dev --respawn --pretty --transpile-only --exit-child src/index.ts dev",

@@ -24,7 +24,7 @@ class Application {
 
   config() {
     this.app.enable('trust proxy')
-
+    console.log('ok')
     if (config.isDev) {
       this.app.use(morgan('dev'))
     }

@@ -1,7 +1,8 @@
+import fs from 'fs'
+import path from 'path'
 import http from 'http'
 import express from 'express'
 import fileupload from 'express-fileupload'
-import helmet from 'helmet'
 import morgan from 'morgan'
 import cors from 'cors'
 import config from '@/config/config'
@@ -24,12 +25,17 @@ class Application {
 
   config() {
     this.app.enable('trust proxy')
-    console.log('ok')
     if (config.isDev) {
       this.app.use(morgan('dev'))
     }
+    if (config.isProd) {
+      this.app.use(
+        morgan('common', {
+          stream: fs.createWriteStream(path.join(__dirname, '../logs/access.log'), { flags: 'a' }),
+        }),
+      )
+    }
     this.app.use(cors())
-    // this.app.use(helmet())
     this.app.use(express.json())
     this.app.use(express.urlencoded({ extended: true }))
     this.app.use(fileupload())

@@ -17,13 +17,14 @@ const findOrFailUser = async (req: Request, original: boolean = false) => {
 }
 
 export const getUsers = ca(async (req, res) => {
-  const users = await db.user.findMany({ include: { role: true } })
-  res.json(usersTrans(users))
+  const users = await db.user.findMany({ include: { role: true, albums: true } })
+  res.json(usersTrans(users.map((el) => ({ ...el, albums: el.albums.map((e) => e.albumId) }))))
 })
 
 export const getUser = ca(async (req, res) => {
   const user = await findOrFailUser(req)
-  res.json(user)
+  const albums = (await db.usersOnAlbums.findMany({ where: { userId: user.id } })).map((el) => el.albumId)
+  res.json({ ...user, albums })
 })
 
 export const createUser = ca(async (req, res) => {
@@ -83,5 +84,24 @@ export const deleteUser = ca(async (req, res) => {
   const user = await findOrFailUser(req, true)
   if (user.role?.name === 'Super Admin') throw new ApiError(403, 'You can not delete super admin.')
   await db.user.delete({ where: { id: user.id } })
+  res.sendStatus(204)
+})
+
+export const addAlbumToUser = ca(async (req, res) => {
+  const user = await findOrFailUser(req, true)
+  const albumId = Number(req.params.albumId)
+  if (isNaN(albumId) || albumId < 1) throw new ApiError(404, 'Album id is invalid')
+  const exists = await db.usersOnAlbums.findFirst({ where: { userId: user.id, albumId } })
+  if (!exists) {
+    await db.usersOnAlbums.create({ data: { userId: user.id, albumId } })
+  }
+  res.sendStatus(204)
+})
+
+export const removeAlbumFromUser = ca(async (req, res) => {
+  const user = await findOrFailUser(req, true)
+  const albumId = Number(req.params.albumId)
+  if (isNaN(albumId) || albumId < 1) throw new ApiError(404, 'Album id is invalid')
+  await db.usersOnAlbums.deleteMany({ where: { userId: user.id, albumId } })
   res.sendStatus(204)
 })

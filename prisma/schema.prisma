@@ -17,14 +17,15 @@ model Role {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int             @id @default(autoincrement())
   name      String
   roleId    Int?
-  role      Role?    @relation(fields: [roleId], references: [id], onDelete: SetNull)
-  email     String   @unique
+  role      Role?           @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  email     String          @unique
   password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  albums    UsersOnAlbums[]
 }
 
 model Forgot {
@@ -36,13 +37,14 @@ model Forgot {
 }
 
 model Album {
-  id          Int      @id @default(autoincrement())
+  id          Int             @id @default(autoincrement())
   name        String
   description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
   media       Media[]
   share       Share[]
+  users       UsersOnAlbums[]
 }
 
 model Media {
@@ -65,4 +67,13 @@ model Share {
   title     String
   createdAt DateTime
   expiredAt DateTime?
+}
+
+model UsersOnAlbums {
+  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  Int
+  album   Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  albumId Int
+
+  @@id([userId, albumId])
 }

@@ -8,9 +8,9 @@ const config = {
   isDev: process.env.NODE_ENV === 'development',
 
   port: Number(process.env.PORT || 5000),
+  resetPasswordExpMinutes: Number(process.env.RESET_PASSWORD_EXP_MINUTES || 15),
   logging: process.env.LOGGING === 'true',
   uploadDir: path.join(__dirname, '../../', process.env.UPLOAD_DIR || 'uploads'),
-  resetPasswordExpMinutes: Number(process.env.RESET_PASSWORD_EXP_MINUTES || 15),
   maxUploadSize: Number(process.env.MAX_UPLOAD_SIZE || 1024),
 
   superAdmin: {

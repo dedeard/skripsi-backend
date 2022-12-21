@@ -7,6 +7,7 @@ export const READ_USER = 'Read User'
 export const CREATE_USER = 'Create User'
 export const UPDATE_USER = 'Update User'
 export const DELETE_USER = 'Delete User'
+export const MANAGE_USER_ALBUM = 'Manage User Album'
 
 export const READ_ALBUM = 'Read Album'
 export const CREATE_ALBUM = 'Create Album'

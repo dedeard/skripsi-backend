@@ -1,0 +1,6 @@
+
+[User]<1.1-*.1[Role]
+
+[Role|+ID: Number;+Name: String;Permissions:Array<String>|getRoles()]
+
+[User|+ID: Number;+surname: string;-password: string|login(user,pass)]

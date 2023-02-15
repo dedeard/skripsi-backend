@@ -33,7 +33,7 @@ export const createAlbum = ca(async (req, res) => {
     let { name, description } = req.body
     req.body = await Joi.object({
       name: Joi.string().trim().min(3).max(200).required(),
-      description: Joi.string().allow('').trim().max(500).required(),
+      description: Joi.string().allow('').trim().max(1500).required(),
     }).validateAsync({ name, description }, { abortEarly: false })
   } catch (e) {
     throw new ApiError(422, 'Failed to create album.', e)
@@ -49,7 +49,7 @@ export const updateAlbum = ca(async (req, res) => {
     let { name, description } = req.body
     req.body = await Joi.object({
       name: Joi.string().trim().min(3).max(200).required(),
-      description: Joi.string().allow('').trim().max(500).required(),
+      description: Joi.string().allow('').trim().max(1500).required(),
     }).validateAsync({ name, description }, { abortEarly: false })
   } catch (e) {
     throw new ApiError(422, 'Failed to create album.', e)

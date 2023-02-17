@@ -32,11 +32,16 @@ const findOrFailMedia = async (req: Request) => {
   return media
 }
 
-export const sendMedia = express.static(path.join(config.uploadDir, 'media'))
+export const sendMedia = express.static(path.join(config.uploadDir, 'media'), {
+  setHeaders(res, path) {
+    res.setHeader('cache-control', 'public, max-age=86400, must-revalidate')
+  },
+})
 
 export const downloadMedia = ca(async (req, res) => {
   const media = await findOrFailMedia(req)
   const fileName = path.join(config.uploadDir, 'media', String(media.albumId), media.name)
+  res.setHeader('cache-control', 'public, max-age=86400, must-revalidate')
   res.download(fileName, media.originalName)
 })
 

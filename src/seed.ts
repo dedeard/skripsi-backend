@@ -40,6 +40,12 @@ async function main() {
     update: { name: 'Administrator', permissions: JSON.stringify(Object.values(permissions)) },
     create: { name: 'Administrator', permissions: JSON.stringify(Object.values(permissions)) },
   })
+  
+  await prisma.role.upsert({
+    where: { name: 'Normal User' },
+    update: { name: 'Normal User', permissions: JSON.stringify([]) },
+    create: { name: 'Normal User', permissions: JSON.stringify([]) },
+  })
 
   for (let i of admins) {
     let data = {

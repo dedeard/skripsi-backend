@@ -33,6 +33,7 @@ export const getMedia = ca(async (req, res) => {
   const file = path.join(config.uploadDir, 'media', String(media.albumId), media.name)
   const exists = await fileExists(file)
   if (!exists) throw new ApiError(404, 'File not found')
+  res.setHeader('cache-control', 'public, max-age=86400, must-revalidate')
   if (download) return res.download(file, media.originalName)
   res.sendFile(file)
 })

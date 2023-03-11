@@ -17,34 +17,36 @@ model Role {
 }
 
 model User {
-  id        Int             @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   name      String
   roleId    Int?
-  role      Role?           @relation(fields: [roleId], references: [id], onDelete: SetNull)
-  email     String          @unique
+  role      Role?    @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  field     Field?   @relation(fields: [fieldId], references: [id], onDelete: SetNull)
+  fieldId   Int?
+  email     String   @unique
   password  String
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  albums    UsersOnAlbums[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Forgot {
+model Field {
   id        Int      @id @default(autoincrement())
-  email     String   @unique
-  code      String
-  expiredAt DateTime
+  name      String   @unique
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+  albums    Album[]
 }
 
 model Album {
-  id          Int             @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
+  field       Field    @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+  fieldId     Int
   name        String
-  description String          @db.Text
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  description String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   media       Media[]
-  share       Share[]
-  users       UsersOnAlbums[]
 }
 
 model Media {
@@ -57,23 +59,4 @@ model Media {
   album        Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-}
-
-model Share {
-  id        Int       @id @default(autoincrement())
-  albumId   Int
-  album     Album     @relation(fields: [albumId], references: [id], onDelete: Cascade)
-  token     String    @unique
-  title     String
-  createdAt DateTime
-  expiredAt DateTime?
-}
-
-model UsersOnAlbums {
-  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId  Int
-  album   Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
-  albumId Int
-
-  @@id([userId, albumId])
 }

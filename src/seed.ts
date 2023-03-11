@@ -16,6 +16,15 @@ const admins = [
   },
 ]
 
+const fileds = [
+  'Sekretariat',
+  'Bidang Sumber Daya Kesehatan',
+  'Bidang Pelayanan Kesehatan',
+  'Bidang Pencegahan dan Pengendalian Penyakit',
+  'Bidang Kesehatan Masyarakat',
+  'Kelompok Jabatan Fungsional',
+]
+
 async function main() {
   const superAdminRole = await prisma.role.upsert({
     where: { name: 'Super Admin' },
@@ -40,12 +49,20 @@ async function main() {
     update: { name: 'Administrator', permissions: JSON.stringify(Object.values(permissions)) },
     create: { name: 'Administrator', permissions: JSON.stringify(Object.values(permissions)) },
   })
-  
+
   await prisma.role.upsert({
-    where: { name: 'Normal User' },
-    update: { name: 'Normal User', permissions: JSON.stringify([]) },
-    create: { name: 'Normal User', permissions: JSON.stringify([]) },
+    where: { name: 'User' },
+    update: { name: 'User', permissions: JSON.stringify([]) },
+    create: { name: 'User', permissions: JSON.stringify([]) },
   })
+
+  for (let name of fileds) {
+    await prisma.field.upsert({
+      where: { name },
+      create: { name },
+      update: { name },
+    })
+  }
 
   for (let i of admins) {
     let data = {
@@ -53,6 +70,7 @@ async function main() {
       email: i.email,
       password: await passwordService.hash(i.email),
       roleId: adminRole.id,
+      fieldId: 1,
     }
     await prisma.user.upsert({
       where: { email: i.email },

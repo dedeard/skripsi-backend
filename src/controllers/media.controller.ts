@@ -23,6 +23,7 @@ const findOrFailMedia = async (req: Request) => {
   const id = Number(req.params.mediaId)
   const name = req.params.mediaId
   let media: Media | null
+
   if (isNaN(id) || id < 1) {
     media = await db.media.findUnique({ where: { name } })
   } else {

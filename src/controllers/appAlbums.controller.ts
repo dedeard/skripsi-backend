@@ -6,29 +6,29 @@ import fileExists from '@/shared/fileExists'
 import path from 'path'
 
 export const getAlbums = ca(async (req, res) => {
-  const userAlbums = await db.usersOnAlbums.findMany({ where: { userId: req.user?.id }, include: { album: { include: { media: true } } } })
-  const albums = userAlbums.map((el) => el.album)
+  const fieldId = req.user?.fieldId || undefined
+  const albums = await db.album.findMany({ where: { fieldId }, include: { media: true, field: true } })
   res.json(albums)
 })
 
 export const getAlbum = ca(async (req, res) => {
+  const fieldId = req.user?.fieldId || undefined
   const id = Number(req.params.albumId)
   if (isNaN(id) || id < 1) throw new ApiError(400, 'Album id is invalid!')
-  const userAlbum = await db.usersOnAlbums.findFirst({
-    where: { userId: req.user?.id, albumId: id },
-    include: { album: { include: { media: true } } },
-  })
-  if (!userAlbum) throw new ApiError(404, 'Album not found!')
-  res.json(userAlbum.album)
+
+  const album = await db.album.findFirst({ where: { fieldId, id }, include: { media: true, field: true } })
+  if (!album) throw new ApiError(404, 'Album not found!')
+  res.json(album)
 })
 
 export const getMedia = ca(async (req, res) => {
+  const fieldId = req.user?.fieldId || undefined
   const download = req.query.download === 'true'
   const name = String(req.params.name || '')
   const media = await db.media.findFirst({ where: { name } })
   if (!media) throw new ApiError(404, 'Media not found!')
-  const share = await db.usersOnAlbums.count({ where: { albumId: media.albumId, userId: req.user?.id } })
-  if (!share) throw new ApiError(401, 'Can not read media!')
+  const allow = await db.album.count({ where: { id: media.albumId, fieldId } })
+  if (!allow) throw new ApiError(401, 'Can not read media!')
 
   const file = path.join(config.uploadDir, 'media', String(media.albumId), media.name)
   const exists = await fileExists(file)

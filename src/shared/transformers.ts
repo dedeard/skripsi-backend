@@ -1,8 +1,8 @@
-import { User, Role } from '@prisma/client'
-import moment from 'moment'
+import { User, Role, Field } from '@prisma/client'
 
 type UserType = User & {
   role?: Role | null
+  field?: Field | null
 }
 
 export const roleTrans = (role: Role) => {

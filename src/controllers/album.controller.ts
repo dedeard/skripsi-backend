@@ -7,7 +7,7 @@ import ApiError from '@/shared/ApiError'
 import ca from '@/shared/catchAsync'
 import config from '@/config/config'
 
-const include = { media: true, share: true }
+const include = { media: true, field: true }
 
 const findOrFailAlbum = async (req: Request) => {
   const id = Number(req.params.id)
@@ -23,18 +23,21 @@ export const getAlbums = ca(async (req, res) => {
 })
 
 export const getAlbum = ca(async (req, res) => {
-  const { id } = await findOrFailAlbum(req)
-  const album = await db.album.findUnique({ where: { id }, include })
+  const album = await findOrFailAlbum(req)
   res.json(album)
 })
 
 export const createAlbum = ca(async (req, res) => {
+  const fields = await db.field.findMany()
   try {
-    let { name, description } = req.body
+    let { name, description, fieldId } = req.body
     req.body = await Joi.object({
       name: Joi.string().trim().min(3).max(200).required(),
       description: Joi.string().allow('').trim().max(1500).required(),
-    }).validateAsync({ name, description }, { abortEarly: false })
+      fieldId: Joi.number()
+        .valid(...fields.map((el) => el.id))
+        .required(),
+    }).validateAsync({ name, description, fieldId }, { abortEarly: false })
   } catch (e) {
     throw new ApiError(422, 'Failed to create album.', e)
   }
@@ -44,13 +47,16 @@ export const createAlbum = ca(async (req, res) => {
 
 export const updateAlbum = ca(async (req, res) => {
   let album = await findOrFailAlbum(req)
-
+  const fields = await db.field.findMany()
   try {
-    let { name, description } = req.body
+    let { name, description, fieldId } = req.body
     req.body = await Joi.object({
       name: Joi.string().trim().min(3).max(200).required(),
       description: Joi.string().allow('').trim().max(1500).required(),
-    }).validateAsync({ name, description }, { abortEarly: false })
+      fieldId: Joi.number()
+        .valid(...fields.map((el) => el.id))
+        .required(),
+    }).validateAsync({ name, description, fieldId }, { abortEarly: false })
   } catch (e) {
     throw new ApiError(422, 'Failed to create album.', e)
   }
